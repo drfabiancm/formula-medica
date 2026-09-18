@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fórmula Médica - Dr. Fabián Castilla Moreno</title>
+    <meta name="theme-color" content="#0056b3">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Fórmula Médica">
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="icon-180.png">
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 11px;
+            color: #1a2530;
+        }
+
+        body {
+            background-color: #f0f2f5;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .no-print {
+            margin-bottom: 15px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            background-color: #0056b3;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            font-size: 12px;
+            font-weight: bold;
+            border-radius: 4px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+        }
+
+        .btn:hover {
+            background-color: #003d82;
+        }
+
+        .btn-add {
+            background-color: #28a745;
+        }
+
+        .btn-add:hover {
+            background-color: #218838;
+        }
+
+        .btn-sispro-top {
+            background-color: #17a2b8;
+        }
+
+        .btn-sispro-top:hover {
+            background-color: #138496;
+        }
+
+        .btn-sispro-inline {
+            background-color: #17a2b8;
+            font-size: 9px;
+            padding: 2px 5px;
+            border-radius: 3px;
+            margin-left: 4px;
+            color: white;
+            text-decoration: none;
+            font-weight: normal;
+            display: inline-block;
+            vertical-align: middle;
+        }
+
+        .btn-sispro-inline:hover {
+            background-color: #117a8b;
+        }
+
+        .btn-remove {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            padding: 2px 6px;
+            font-size: 10px;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+
+        .page {
+            width: 210mm;
+            min-height: 297mm;
+            padding: 12mm 15mm;
+            background: white;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .content {
+            flex: 1;
+        }
+
+        /* Encabezado */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            border-bottom: 2px solid #0056b3;
+            padding-bottom: 8px;
+            margin-bottom: 15px;
+        }
+
+        .doctor-info h1 {
+            font-size: 16px;
+            font-weight: bold;
+            color: #0056b3;
+            margin: 0 0 3px 0;
+        }
+
+        .doctor-info h2 {
+            font-size: 10.5px;
+            font-weight: bold;
+            color: #444;
+            margin: 0 0 4px 0;
+            text-transform: uppercase;
+        }
+
+        .doctor-info p {
+            font-size: 9.5px;
+            color: #555;
+            margin: 1px 0;
+        }
+
+        .institution-info {
+            text-align: right;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 4px;
+        }
+
+        .institution-info div {
+            font-size: 10px;
+            font-weight: bold;
+            color: #0056b3;
+        }
+
+        .logo-img {
+            max-height: 45px;
+            width: auto;
+            object-fit: contain;
+            margin-bottom: 4px;
+        }
+
+        .title-bar {
+            text-align: center;
+            font-size: 15px;
+            font-weight: bold;
+            color: #0056b3;
+            letter-spacing: 1px;
+            margin: 10px 0;
+        }
+
+        /* Datos del Paciente */
+        .patient-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 15px;
+        }
+
+        .patient-table td {
+            border: 1px solid #0056b3;
+            padding: 5px 8px;
+            vertical-align: middle;
+        }
+
+        .label {
+            font-weight: bold;
+            background-color: #eef7ff;
+            color: #0056b3;
+            white-space: nowrap;
+        }
+
+        input[type="text"], input[type="date"], textarea {
+            width: 100%;
+            border: none;
+            outline: none;
+            background: transparent;
+            font-family: inherit;
+            font-size: 11px;
+        }
+
+        input:focus, textarea:focus {
+            background-color: #f4f9ff;
+        }
+
+        /* Prescripción (Rx) */
+        .rx-section {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        .rx-symbol {
+            font-size: 26px;
+            font-weight: bold;
+            color: #0056b3;
+            font-family: 'Times New Roman', serif;
+        }
+
+        .prescription-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 15px;
+        }
+
+        .prescription-table th {
+            background-color: #0056b3;
+            color: white;
+            padding: 6px;
+            text-align: left;
+            font-size: 11px;
+        }
+
+        .prescription-table td {
+            border: 1px solid #ccc;
+            padding: 6px;
+            vertical-align: top;
+        }
+
+        .med-number {
+            text-align: center;
+            font-weight: bold;
+            vertical-align: middle !important;
+        }
+
+        .instructions-cell {
+            padding-top: 4px !important;
+        }
+
+        .instructions-cell input {
+            color: #444;
+            font-style: italic;
+        }
+
+        .action-cell {
+            text-align: center;
+            vertical-align: middle !important;
+        }
+
+        /* Firma */
+        .signature-container {
+            margin-top: 20px;
+            display: flex;
+            justify-content: flex-end;
+            page-break-inside: avoid;
+        }
+
+        .signature-block {
+            width: 280px;
+            text-align: left;
+        }
+
+        .signature-img {
+            max-width: 100%;
+            height: 70px;
+            object-fit: contain;
+            display: block;
+        }
+
+        .signature-line {
+            border-top: 1px solid #000;
+            padding-top: 4px;
+            font-size: 9.5px;
+            line-height: 1.3;
+        }
+
+        /* Banner Publicitario / Domicilios */
+        .banner-delfos {
+            margin-top: 15px;
+            border: 1px solid #0056b3;
+            border-radius: 4px;
+            padding: 8px 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #fafafa;
+        }
+
+        .banner-brand {
+            font-size: 14px;
+            font-weight: bold;
+            color: #002b66;
+        }
+
+        .banner-brand span {
+            font-size: 10px;
+            display: block;
+            color: #555;
+            font-weight: normal;
+        }
+
+        .banner-sedes {
+            font-size: 9px;
+            line-height: 1.3;
+            color: #333;
+        }
+
+        .banner-contact {
+            text-align: right;
+            font-weight: bold;
+            color: #0056b3;
+            font-size: 11px;
+        }
+
+        /* Footer */
+        .footer-info {
+            margin-top: 10px;
+            border-top: 1px solid #ccc;
+            padding-top: 5px;
+            font-size: 9px;
+            text-align: center;
+            color: #666;
+        }
+
+
+        /* Adaptación para iPhone / PWA */
+        @media screen and (max-width: 700px) {
+            body { padding: 8px; align-items: stretch; }
+            .no-print { flex-wrap: wrap; justify-content: center; gap: 6px; position: sticky; top: 0; z-index: 20; background: #f0f2f5; padding: 6px 0; }
+            .btn { padding: 9px 11px; font-size: 11px; }
+            .page { width: 100%; min-height: auto; padding: 14px 10px; box-shadow: 0 1px 8px rgba(0,0,0,.08); }
+            .header { gap: 8px; }
+            .doctor-info h1 { font-size: 14px; }
+            .doctor-info h2 { font-size: 9px; }
+            .doctor-info p { font-size: 8px; }
+            .institution-info { display: none; }
+            .title-bar { font-size: 14px; }
+            .patient-table td { padding: 6px 5px; }
+            .patient-table .label { font-size: 9px; }
+            input[type="text"], input[type="date"], textarea { font-size: 12px; }
+            .prescription-table { table-layout: fixed; }
+            .prescription-table th, .prescription-table td { padding: 5px 4px; }
+            .prescription-table th:nth-child(2) { width: 63% !important; }
+            .prescription-table th:nth-child(3) { width: 25% !important; }
+            .prescription-table th:nth-child(4) { width: 7% !important; }
+            .signature-container { justify-content: center; }
+            .signature-block { width: min(280px, 100%); }
+            .banner-delfos { flex-direction: column; align-items: flex-start; gap: 6px; }
+            .banner-contact { text-align: left; }
+        }
+
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+            .no-print, .action-cell, th.action-header, .btn-sispro-inline {
+                display: none !important;
+            }
+            .page {
+                box-shadow: none;
+                padding: 8mm 10mm;
+                width: 100%;
+            }
+            input, textarea {
+                border: none !important;
+                background: transparent !important;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Botones superiores no imprimibles -->
+    <div class="no-print">
+        <button class="btn btn-add" onclick="agregarMedicamento()">+ Agregar Medicamento</button>
+        <a href="https://web.sispro.gov.co/WebPublico/Consultas/ConsultarDetalleReferenciaBasica.aspx?Code=CIE10" target="_blank" class="btn btn-sispro-top">🔍 Abrir Buscador Sispro</a>
+        <button class="btn" onclick="window.print()">Imprimir / Guardar en PDF</button>
+    </div>
+
+    <div class="page">
+        <div class="content">
+            <!-- Encabezado Médico -->
+            <div class="header">
+                <div class="doctor-info">
+                    <h1>Dr. Fabián Castilla Moreno</h1>
+                    <h2>Médico General y Especialista en Seguridad y Salud en el Trabajo</h2>
+                    <p>Universidad del Sinú - Universidad de Cartagena</p>
+                    <p><b>Reg. Médico:</b> 131-7233 | <b>Lic. SST:</b> 095 / 2017</p>
+                </div>
+                <div class="institution-info">
+                            <div>LABORATORIO CLINICO LA CASTELLANA SAS</div>
+                    <div>MEDICINA INTEGRAL DEL CARIBE SAS</div>
+                </div>
+            </div>
+
+            <div class="title-bar">FÓRMULA MÉDICA</div>
+
+            <!-- Datos del Paciente -->
+            <table class="patient-table">
+                <tr>
+                    <td class="label" style="width: 12%;">NOMBRE:</td>
+                    <td style="width: 58%;"><input type="text" placeholder="Nombre completo del paciente"></td>
+                    <td class="label" style="width: 10%;">FECHA:</td>
+                    <td style="width: 20%;"><input type="date"></td>
+                </tr>
+                <tr>
+                    <td class="label">
+                        DX: 
+                        <a href="https://web.sispro.gov.co/WebPublico/Consultas/ConsultarDetalleReferenciaBasica.aspx?Code=CIE10" target="_blank" class="btn-sispro-inline" title="Abrir portal Sispro para consultar CIE-10">🔍 Sispro</a>
+                    </td>
+                    <td colspan="3">
+                        <input type="text" id="input-dx" list="lista-cie10" placeholder="Escriba código o nombre del diagnóstico (ej. J069, Faringitis, HTA)...">
+                        <datalist id="lista-cie10">
+                            <!-- Infecciones Respiratorias -->
+                            <option value="J00 - RINOFARINGITIS AGUDA [RESFRIADO COMUN]"></option>
+                            <option value="J019 - SINUSITIS AGUDA, NO ESPECIFICADA"></option>
+                            <option value="J029 - FARINGITIS AGUDA, NO ESPECIFICADA"></option>
+                            <option value="J039 - AMIGDALITIS AGUDA, NO ESPECIFICADA"></option>
+                            <option value="J040 - LARINGITIS AGUDA"></option>
+                            <option value="J069 - INFECCION AGUDA DE LAS VIAS RESPIRATORIAS SUPERIORES, NO ESPECIFICADA"></option>
+                            <option value="J209 - BRONQUITIS AGUDA, NO ESPECIFICADA"></option>
+                            <option value="J459 - ASMA, NO ESPECIFICADA"></option>
+                            
+                            <!-- Cardio y Metabólico -->
+                            <option value="I10X - HIPERTENSION ESENCIAL (PRIMARIA)"></option>
+                            <option value="E119 - DIABETES MELLITUS NO INSULINODEPENDIENTE SIN COMPLICACIONES"></option>
+                            <option value="E785 - HIPERLIPIDEMIA, NO ESPECIFICADA"></option>
+                            <option value="E669 - OBESIDAD, NO ESPECIFICADA"></option>
+
+                            <!-- Digestivo -->
+                            <option value="K219 - ENFERMEDAD DEL REFLUJO GASTROESOFAGICO SIN ESOFAGITIS"></option>
+                            <option value="K297 - GASTRITIS, NO ESPECIFICADA"></option>
+                            <option value="K589 - SINDROME DEL COLON IRRITABLE SIN DIARREA"></option>
+                            <option value="A09X - DIARREA Y GASTROENTERITIS DE PRESUNTO ORIGEN INFECCIOSO"></option>
+                            <option value="B829 - PARASITISMO INTESTINAL, NO ESPECIFICADO"></option>
+
+                            <!-- Osteomuscular y Dolor -->
+                            <option value="M545 - LUMBAGO NO ESPECIFICADO"></option>
+                            <option value="M542 - CERVICALGIA"></option>
+                            <option value="M791 - MIALGIA"></option>
+                            <option value="M255 - DOLOR EN ARTICULACION"></option>
+                            <option value="R51X - CEFALEA"></option>
+                            <option value="G439 - MIGRAÑA, NO ESPECIFICADA"></option>
+
+                            <!-- Renal / Genitourinario -->
+                            <option value="N390 - INFECCION DE VIAS URINARIAS, SITIO NO ESPECIFICADO"></option>
+                            <option value="N309 - CISTITIS, NO ESPECIFICADA"></option>
+
+                            <!-- Piel y General -->
+                            <option value="L039 - CELULITIS DE SITIO NO ESPECIFICADO"></option>
+                            <option value="L239 - DERMATITIS DE CONTACTO ALERGICA, DE CAUSA NO ESPECIFICADA"></option>
+                            <option value="R509 - FIEBRE, NO ESPECIFICADA"></option>
+                            <option value="R104 - OTROS DOLORES ABDOMINALES Y LOS NO ESPECIFICADOS"></option>
+                            <option value="Z000 - EXAMEN MEDICO GENERAL"></option>
+                        </datalist>
+                    </td>
+                </tr>
+            </table>
+
+            <!-- Símbolo Rx -->
+            <div class="rx-section">
+                <span class="rx-symbol">Rx</span>
+            </div>
+
+            <!-- Tabla Dinámica de Medicamentos -->
+            <table class="prescription-table">
+                <thead>
+                    <tr>
+                        <th style="width: 5%;">#</th>
+                        <th style="width: 70%;">MEDICAMENTO Y POSOLOGÍA</th>
+                        <th style="width: 18%;">CANTIDAD</th>
+                        <th class="action-header" style="width: 7%; text-align: center;">---</th>
+                    </tr>
+                </thead>
+                <tbody id="lista-medicamentos">
+                    <!-- Las filas se generan automáticamente -->
+                </tbody>
+            </table>
+
+            <!-- Firma Médica -->
+            <div class="signature-container">
+                <div class="signature-block">
+                    <img src="firma.png" alt="Firma Médica" class="signature-img" onerror="this.style.display='none'">
+                    <div class="signature-line">
+                        <b>Fabián Castilla Moreno</b><br>
+                        Médico Esp. en Gestión de Riesgo Laboral / SST<br>
+                        Lic. SST No. 095 de 2017 | Reg. Médico 131-7233
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Banner Droguerías (Pie de fórmula) -->
+        <div class="banner-delfos">
+            <div class="banner-brand">
+                DROGUERÍAS DELFOS
+                <span>LABORATORIOS BONTAL</span>
+            </div>
+            <div class="banner-sedes">
+                <b>Sede Santa Lucía:</b> Centro de Salud y Negocios Ronda Real II. Cra. 69 No. 31 - 139.<br> 
+                Primer Piso. Local 156 - Al lado de la Cámara de Comercio. <br>
+              | ☎️ PBX: 605 653 1013 - VM: 314 772 5557 📲 314 408 0483 / 314 408 1727
+            </div>
+            <div class="banner-contact">
+                ASESORÍA DOMICILIOS<br>
+                📞 300 913 6784
+            </div>
+        </div>
+
+        <!-- Pie de página general -->
+        <div class="footer-info">
+            Cartagena, Bolívar | Teléfono / Celular: 3015988634
+        </div>
+    </div>
+
+    <script>
+        function agregarMedicamento() {
+            const tbody = document.getElementById('lista-medicamentos');
+            
+            const row1 = document.createElement('tr');
+            row1.className = 'med-item';
+            row1.innerHTML = `
+                <td rowspan="2" class="med-number"></td>
+                <td><input type="text" placeholder="Nombre del medicamento, concentración y forma farmacéutica"></td>
+                <td><input type="text" placeholder="Ej: 10"></td>
+                <td rowspan="2" class="action-cell">
+                    <button class="btn-remove" onclick="eliminarMedicamento(this)">✕</button>
+                </td>
+            `;
+
+            const row2 = document.createElement('tr');
+            row2.className = 'med-item-uso';
+            row2.innerHTML = `
+                <td colspan="2" class="instructions-cell">
+                    <input type="text" placeholder="USO / INDICACIONES: (Ej: Tomar 1 tableta cada 8 horas por 5 días)">
+                </td>
+            `;
+
+            tbody.appendChild(row1);
+            tbody.appendChild(row2);
+
+            renumerarMedicamentos();
+        }
+
+        function eliminarMedicamento(btn) {
+            const row1 = btn.closest('tr');
+            const row2 = row1.nextElementSibling;
+            row1.remove();
+            if (row2 && row2.classList.contains('med-item-uso')) {
+                row2.remove();
+            }
+            renumerarMedicamentos();
+        }
+
+        function renumerarMedicamentos() {
+            const numeros = document.querySelectorAll('.med-number');
+            numeros.forEach((td, index) => {
+                td.textContent = index + 1;
+            });
+        }
+
+        window.onload = function() {
+            agregarMedicamento();
+        };
+    </script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js').catch(() => {}));
+        }
+    </script>
+</body>
+</html>
